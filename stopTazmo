@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Downlaods manga from stoptazmo.com. If two arguments are given (name of manga
+# and an issue) the mangas ranging from 001 up to the given issue is downloaded.
+# If three arguments are given (name of manga, issue to start download from,
+# and issue to stop download from) the mangas ranging from startIssue to 
+# stopIssue will be downloaded.
+
+manga="" # name of manga to be downloaded
+startIssue="" # issue number at which to start download
+endIssue="" # issue number at which to stop download
+
+if [ $# -eq 2 ]; then
+	manga=$1
+	startIssue=001
+	endIssue=$2
+elif [ $# -eq 3 ]; then
+	manga=$1
+	startIssue=$2
+	endIssue=$3
+else
+    echo "usage: ./tazmo <Manga> [startIssue] endIssue"
+    exit 1
+fi
+
+
+for (( counter=$startIssue; counter<=$endIssue; counter++ )); do
+	
+	if [ $counter -lt 10 ]; then
+		number="00$counter"
+	elif [ $counter -lt 100 ]; then
+		number="0$counter"
+	else
+		number="$counter"
+	fi
+
+	userAgent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.1) Gecko/20060111 Firefox/1.5.0.1" 
+	url="http://stoptazmo.com/downloads/get_file.php?file_category=${manga}&mirror=1&file_name=${manga}_${number}.zip"
+
+	wget --user-agent="${userAgent}" -e robots=off "$url"
+
+	mv ${manga}_${number}.zip ./Desktop
+done

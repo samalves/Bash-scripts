@@ -1,0 +1,41 @@
+#!/bin/bash
+
+##
+#
+# Purpose: Ask the user what they're currently doing, then archive the answer to a specific file.
+# 
+# Author: Sam Alves 
+# Created: Tue Dec 21, 2010
+# Bash v4.0.33
+#
+# Note: notify-send is another cool way to message the user via bash
+# 			here's are some links to get you started: 
+#					
+#					www.thegeekstuff.com/2010/12/ubuntu-notify-send
+#					https://wiki.ubuntu.com/NotificationDevelopmentGuidelines
+#
+##
+
+
+LOG_FILE="/home/sam/timelog"
+
+while [ 1 ]
+do
+
+	sleep 15m
+
+	# Note: Padding the description with whitespace 
+	# to forcefully widen the entry box
+	QUESTION="What are you up to?\t\t\t\t\t\t\t\t\t\t"
+
+	# Get the user's previous answer
+	PREVIOUS_ANSWER="$(tail -n 1 $LOG_FILE | awk 'BEGIN { FS = " -- " } ; { print $2 }')"
+
+	# For the users convenience, prefill the entry with the user's previous answer.
+	ANSWER=`zenity --entry --title="TimeTracker" --text="${QUESTION}" --entry-text="${PREVIOUS_ANSWER}"` 
+
+	TIME=`date +"%Y-%m-%d %T"`
+
+	echo "$TIME -- $ANSWER" | tee --append $LOG_FILE
+
+done
